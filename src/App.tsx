@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+	const [plant, setPlant] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+	useEffect(() => {
+		const url = "https://house-plants2.p.rapidapi.com/all";
+
+		const options = {
+			method: "GET",
+			headers: {
+				"x-rapidapi-key": "9db15f58b8msh5101d3f3e72beaep175fadjsn258b615b608e", // Remplace par ta propre clé API
+				"x-rapidapi-host": "house-plants2.p.rapidapi.com",
+			},
+		};
+
+		fetch(url, options)
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error(
+						"Une erreur s'est produite lors de la récupération des données",
+					);
+				}
+				return response.json();
+			})
+			.then((data) => {
+				setPlant(data);
+				setLoading(false);
+			})
+			.catch((err) => {
+				setError(err.message);
+				setLoading(false);
+			});
+	}, []);
+
+	if (loading) return <div>Chargement...</div>;
+	if (error) return <div>Erreur: {error}</div>;
+
+	return (
+		<div>
+			<h1>Liste des Plantes</h1>
+			<ul>
+				{plant.map((item) => (
+					<li>
+						<h2>{item.Watering}</h2>
+					</li>
+				))}
+			</ul>
+		</div>
+	);
 }
 
-export default App
+export default App;
