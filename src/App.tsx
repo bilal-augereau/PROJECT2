@@ -39,13 +39,29 @@ function App() {
 	if (loading) return <div>Chargement...</div>;
 	if (error) return <div>Erreur: {error}</div>;
 
+	console.log(plant);
 	return (
 		<div>
 			<h1>Liste des Plantes</h1>
 			<ul>
-				{plant.map((item) => (
-					<li>
-						<h2>{item.Watering}</h2>
+				{plant.map((item, index) => (
+					<li key={index}>
+						{/* Check if both 'Temperature max' and 'Temperature min' exist */}
+						{item["Temperature max"]?.C && item["Temperature min"]?.C ? (
+							// Calculate and display the difference if both exist
+							<span>
+								{item["Temperature max"].C - item["Temperature min"].C}°C
+							</span>
+						) : item["Temperature max"]?.C && !item["Temperature min"]?.C ? (
+							// If 'Temperature min' is missing, display 'Temperature min not available'
+							<span>
+								{item["Temperature max"].C}°C (Min temperature data not
+								available)
+							</span>
+						) : (
+							// If neither 'Temperature max' nor 'Temperature min' exist, display 'Temperature data not available'
+							<span>Temperature data not available</span>
+						)}
 					</li>
 				))}
 			</ul>
